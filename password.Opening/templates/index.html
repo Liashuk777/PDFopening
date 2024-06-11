@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Page Unlock</title>
+    <link rel="stylesheet" type="text/css" href="/static/styles.css">
+</script>
+</head>
+<body>
+    <div class="header-container">
+        <img src="/static/header.jpg" alt="PDF Page Unlock" class="header-image">
+        <h1>PDF Page Unlock</h1>
+    </div>
+   <div class="result">
+    <div id="password-container"></div>
+    <div id="status-message"></div>
+    <div id="timer"></div>
+    <div id="cracking-info"></div>
+   </div>
+   <div class="instruction">
+    <h2> Інструкції користувача</h2>
+    <ol>
+        <li>Виберіть PDF-файл, для якого потрібно знайти пароль.</li>
+        <li>Вкажіть мінімальну та максимальну кількість цифр у паролі.</li>
+        <li>НЕОБОВ'ЯЗКОВО. Введіть регулярний вираз для пароля, якщо він відомий</li>
+        <li>Натисніть кнопку "Crack Password", щоб почати процес розшифрування.</li>
+    </ol>
+</div>
+    <form id="crack-form" action="/crack_password" method="post">
+        <label for="pdfFile">Select PDF file:</label>
+        <input type="file" id="pdfFile" name="pdfFile" accept=".pdf" required>
+        <br>
+        <label for="minDigits">Minimum digits in the password:</label>
+        <input type="number" id="minDigits" name="minDigits" value="1" min="1" required>
+        <br>
+        <label for="maxDigits">Maximum digits in the password:</label>
+        <input type="number" id="maxDigits" name="maxDigits" value="4" min="1" required>
+        <br>
+        <label for="matchingRegex">Matching-regex for password:</label>
+        <input type="text" id="matchingRegex" name="matchingRegex" placeholder="Optional">
+        <br>
+        <input type="submit" value="Open PDF" id="crack-button">
+    </form>
+
+    <div class="spinner" id="loading-spinner"></div>
+
+    <script>
+        document.getElementById("crack-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const file = formData.get('pdfFile');
+            const reader = new FileReader();
+
+            // Показати спіннер при початку процесу
+            document.getElementById("loading-spinner").style.display = "block";
+            document.getElementById("crack-button").disabled = true;
+            document.getElementById("crack-button").value = "Opening...";
+
+            let startTime = new Date().getTime();
+            const timerInterval = setInterval(() => {
+                let elapsedTime = new Date().getTime() - startTime;
+                document.getElementById("timer").innerText = `Минуло часу: ${Math.floor(elapsedTime / 1000)}s`;
+            }, 1000);
+
+            reader.onload = function() {
+                fetch('/crack_password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        filename: file.name,
+                        minDigits: formData.get('minDigits'),
+                        maxDigits: formData.get('maxDigits'),
+                        matchingRegex: formData.get('matchingRegex')
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    clearInterval(timerInterval);
+                    if (data.password) {
+                        document.getElementById("password-container").innerText = "Пароль знайдено: " + data.password;
+                        document.getElementById("cracking-info").innerText = "Процес успішно завершено.";
+                    } else {
+                        document.getElementById("password-container").innerText = "Password not found";
+                        document.getElementById("cracking-info").innerText = "Could not crack the password.";
+                    }
+                    document.getElementById("loading-spinner").style.display = "none";
+                    document.getElementById("crack-button").disabled = false;
+                    document.getElementById("crack-button").value = "Open PDF";
+                })
+                .catch(error => {
+                    clearInterval(timerInterval);
+                    console.error('Error:', error);
+                    document.getElementById("cracking-info").innerText = "An error occurred during the process.";
+                    document.getElementById("loading-spinner").style.display = "none";
+                    document.getElementById("crack-button").disabled = false;
+                    document.getElementById("crack-button").value = "Open PDF";
+                });
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
+    <div class="header-container1" class="header-image1">
+        <p>Встановлення паролю на PDF-файл стає легким завдяки онлайн-інструментам.</p> <p>Просто перейдіть за посиланням, і ви зможете швидко та зручно захистити свій PDF паролем,</p>
+        <p>забезпечивши безпеку та конфіденційність вашої інформації.</p>
+        <a href="https://www.pdf2go.com/ru/protect-pdf" target="_blank">Встановити пароль</a>
+        <img src="/static/header1.jpg" alt="Друге фото">
+    </div>
+    <div class="social-media">
+        &copy; 2024  | Ляшук Олександр | <a href="https://www.instagram.com/liashuk7777/">Instagram</a>
+    </div>
+</body>
+</html>
