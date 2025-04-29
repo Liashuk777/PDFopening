@@ -1,55 +1,19 @@
-
-# === Node / React Native ===
+# Системні та IDE файли
+.DS_Store
+Thumbs.db
 node_modules/
-*.log
-*.lock
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# === Expo / EAS Build ===
 .expo/
 .expo-shared/
-*.turtle
-*.tar.gz
-*.apk
-*.aab
-dist/
-build/
-
-# === iOS / Android Native ===
-ios/
-android/
-*.keystore
-
-# === macOS ===
-.DS_Store
-
-# === Windows system files ===
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-*.pf
-Windows/
-System Volume Information/
-
-# === Python / FastAPI backend ===
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-env/
-venv/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
 .env
-*.sqlite3
-*.db
 
-# === Git ===
-.git/
-.gitignore
+# Windows системні каталоги
+/System Volume Information/
+/$RECYCLE.BIN/
 
-# === VSCode / IDEs ===
-.vscode/
-.idea/
-*.swp
+# Android
+android/
+*.apk
+*.keystore
